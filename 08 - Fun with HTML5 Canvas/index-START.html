@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+
+<script>
+const canvas = document.querySelector('#draw');
+
+ // const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  function style () {
+    ctx.lineWidth = 100;
+    ctx.strokeStyle = '#BADA55';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+  };
+  
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  let timer;
+  const resize = (e) => {
+
+  e.preventDefault();
+  e.stopPropagation();
+
+    
+    if(!timer) {
+      timer = setTimeout(function() {
+        timer = null;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        style();
+      }, 66);
+
+    }
+  };
+  
+
+  const draw = (e) => {
+    if(!isDrawing) return;
+
+    const {clientX, clientY} = e;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(clientX, clientY);
+    ctx.stroke();
+    [lastX, lastY] = [clientX, clientY];
+  };
+
+  style();
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mousedown', (e) => { 
+    const {clientX, clientY} = e;
+    isDrawing = true;
+    [lastX, lastY] = [clientX, clientY];
+  });
+
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+  window.addEventListener('resize', resize);  
+
+</script>
+
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
